@@ -1,0 +1,139 @@
+$primary: #41a0e4;
+$sucess: #479f77;
+$warning: #ec9024;
+$error: #d83a56;
+$secondary: #f2f2f2;
+$white: white;
+$black: black;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.btn {
+  &-warning {
+    background-color: $warning !important;
+
+    &:not(:disabled) {
+      &:hover {
+        background-color: $warning !important;
+      }
+
+      &:active {
+        background-color: $warning !important;
+      }
+    }
+  }
+
+  &-success {
+    background-color: $sucess !important;
+
+    &:not(:disabled) {
+      &:hover {
+        background-color: $sucess !important;
+      }
+
+      &:active {
+        background-color: $sucess !important;
+      }
+    }
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+
+  &-fluid {
+    width: 100%;
+    padding: 16px;
+  }
+}
+
+.table-striped-rows tr:nth-of-type(even) td {
+  background-color: $secondary;
+}
+
+.wrapper {
+  &-logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-content {
+    margin: 24px 16px;
+    padding: 24px;
+    min-height: calc(100vh - 130px);
+    background: $white;
+  }
+
+  &-header {
+    display: flex;
+    justify-content: flex-end;
+    background: $white;
+  }
+
+  &-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 24px 16px 0;
+  }
+}
+
+.summaries {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #c2d6ff, #adc9ff);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.login {
+  &-container {
+    display: flex;
+    height: 100vh;
+  }
+  &-description {
+    width: 50%;
+    background-color: $primary;
+    justify-content: center;
+    align-items: center;
+  }
+  &-form {
+    margin: 50px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    &-title-container {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.home {
+  &-header {
+    &-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: $white;
+      gap: 30px;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      position: fixed;
+      z-index: 1000;
+      min-height: 70px;
+    }
+  }
+}

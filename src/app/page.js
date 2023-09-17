@@ -1,95 +1,105 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+
+import {
+  HomeAvaliableProducts,
+  HomeBanner,
+  HomeFooter,
+  HomeFormLogin,
+  HomeFormRegister,
+  HomeHeader,
+  HomeNewProducts,
+} from "@/components";
+import { requestApi } from "@/utils";
+import { Layout } from "antd";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [isModalRegisterOpen, setIsModalRegisterOpen] = useState(false);
+  const [isModalLoginOpen, setIsModalLoginOpen] = useState(false);
+  const [isNewProductsLoading, setIsNewProductsLoading] = useState(true);
+  const [isAvailableProductsLoading, setIsAvailableProductsLoading] = useState(true);
+  const [isShowLoadMore, setIsShowLoadMore] = useState(true);
+  const [newProducts, setNewProducts] = useState([]);
+  const [availableProducts, setAvailableProducts] = useState([]);
+  const [availableProductsPage, setAvailableProductsPage] = useState(1);
+
+  useEffect(() => {
+    getNewProducts();
+  }, []);
+
+  useEffect(() => {
+    getAvailableProducts();
+  }, [availableProductsPage]);
+
+  const getNewProducts = async (search) => {
+    const payload = { isNew: true };
+
+    if (search) payload.search = search;
+
+    const response = await requestApi({
+      method: "get",
+      endpoint: "/products",
+      params: payload,
+      setLoading: (bool) => setIsNewProductsLoading(bool),
+    });
+
+    if (response) setNewProducts(response.data.data.data);
+  };
+
+  const getAvailableProducts = async (search, isLoadMore) => {
+    const payload = { page: availableProductsPage, limit: 10 };
+
+    if (search) payload.search = search;
+
+    const response = await requestApi({
+      method: "get",
+      endpoint: "/products",
+      params: payload,
+      setLoading: (bool) => setIsAvailableProductsLoading(bool),
+    });
+
+    if (response) {
+      if (response.data.data.data.length <= 0) setIsShowLoadMore(false);
+      if (isLoadMore) {
+        setAvailableProducts((prevState) => [...prevState, ...response.data.data.data]);
+      } else {
+        setAvailableProducts(response.data.data.data);
+      }
+      setAvailableProductsPage(response.data.data.page);
+    }
+  };
+
+  const handleSearch = (values) => {
+    getNewProducts(values.search);
+    getAvailableProducts(values.search);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <>
+      <HomeHeader
+        onLoginClick={() => setIsModalLoginOpen(true)}
+        onRegisterClick={() => setIsModalRegisterOpen(true)}
+        onSearch={handleSearch}
+      />
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <Layout.Content style={{ paddingTop: 70 }} className="container">
+        <HomeBanner />
+        <HomeNewProducts data={newProducts} isLoading={isNewProductsLoading} />
+        <HomeAvaliableProducts
+          data={availableProducts}
+          isLoading={isAvailableProductsLoading}
+          isLoadMore={isShowLoadMore}
+          onLoadMore={() => getAvailableProducts(null, true)}
         />
-      </div>
+      </Layout.Content>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+      <HomeFooter />
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      <HomeFormLogin isOpen={isModalLoginOpen} onCancel={() => setIsModalLoginOpen(false)} />
+      <HomeFormRegister
+        isOpen={isModalRegisterOpen}
+        onCancel={() => setIsModalRegisterOpen(false)}
+      />
+    </>
+  );
 }
